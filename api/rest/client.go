@@ -7,7 +7,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -107,7 +109,17 @@ func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private boo
 	if c.destination == okex.DemoServer {
 		r.Header.Add("x-simulated-trading", "1")
 	}
-	return c.client.Do(r)
+	res, err := c.client.Do(r)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != 200 {
+		b, _ := io.ReadAll(res.Body)
+		return nil, errors.New(string(b))
+	}
+
+	return res, nil
 }
 
 // Do the http request to the server
