@@ -4,15 +4,28 @@ import "github.com/hardstylez72/okex"
 
 type (
 	Currency struct {
-		Ccy         string `json:"ccy"`
-		Name        string `json:"name"`
-		Chain       string `json:"chain"`
-		MinWd       string `json:"minWd"`
-		MinFee      string `json:"minFee"`
-		MaxFee      string `json:"maxFee"`
-		CanDep      bool   `json:"canDep"`
-		CanWd       bool   `json:"canWd"`
-		CanInternal bool   `json:"canInternal"`
+		CanDep               bool   `json:"canDep"`
+		CanInternal          bool   `json:"canInternal"`
+		CanWd                bool   `json:"canWd"`
+		Ccy                  string `json:"ccy"`
+		Chain                string `json:"chain"`
+		DepQuotaFixed        string `json:"depQuotaFixed"`
+		DepQuoteDailyLayer2  string `json:"depQuoteDailyLayer2"`
+		LogoLink             string `json:"logoLink"`
+		MainNet              bool   `json:"mainNet"`
+		MaxFee               string `json:"maxFee"`
+		MaxWd                string `json:"maxWd"`
+		MinDep               string `json:"minDep"`
+		MinDepArrivalConfirm string `json:"minDepArrivalConfirm"`
+		MinFee               string `json:"minFee"`
+		MinWd                string `json:"minWd"`
+		MinWdUnlockConfirm   string `json:"minWdUnlockConfirm"`
+		Name                 string `json:"name"`
+		NeedTag              bool   `json:"needTag"`
+		UsedDepQuotaFixed    string `json:"usedDepQuotaFixed"`
+		UsedWdQuota          string `json:"usedWdQuota"`
+		WdQuota              string `json:"wdQuota"`
+		WdTickSz             string `json:"wdTickSz"`
 	}
 	Balance struct {
 		Ccy       string `json:"ccy"`
