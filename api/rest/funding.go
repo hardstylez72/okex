@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strings"
 
@@ -157,8 +158,14 @@ func (c *Funding) Withdrawal(ctx context.Context, req requests.Withdrawal) (resp
 		return
 	}
 	defer res.Body.Close()
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		return
+	}
+	if err := json.Unmarshal(b, &response); err != nil {
+		return
+	}
 	return
 }
 
