@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/amir-the-h/okex"
-	"github.com/amir-the-h/okex/api"
+	"github.com/hardstylez72/okex"
+	"github.com/hardstylez72/okex/api"
 )
 
 func main() {

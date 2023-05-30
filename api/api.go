@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amir-the-h/okex"
-	"github.com/amir-the-h/okex/api/rest"
-	"github.com/amir-the-h/okex/api/ws"
+	"github.com/hardstylez72/okex"
+	"github.com/hardstylez72/okex/api/rest"
+	"github.com/hardstylez72/okex/api/ws"
 )
 
 // Client is the main api wrapper of okex
