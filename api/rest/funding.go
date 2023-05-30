@@ -41,6 +41,21 @@ func (c *Funding) GetCurrencies() (response responses.GetCurrencies, err error) 
 	return
 }
 
+func (c *Funding) GetCurrency(ccy string) (response responses.GetCurrencies, err error) {
+	p := "/api/v5/asset/currencies?ccy="
+
+	res, err := c.client.Do(http.MethodGet, p+ccy, true)
+	if err != nil {
+		return
+	}
+	defer res.Body.Close()
+
+	d := json.NewDecoder(res.Body)
+	err = d.Decode(&response)
+
+	return
+}
+
 // GetBalance
 // Retrieve the balances of all the assets, and the amount that is available or on hold.
 //
