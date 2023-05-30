@@ -39,7 +39,7 @@ type (
 		ToAddr string                     `json:"toAddr"`
 		Pwd    string                     `json:"pwd"`
 		Amt    float64                    `json:"amt,string"`
-		Fee    string                     `json:"fee,string"`
+		Fee    float64                    `json:"fee,string"`
 		Dest   okex.WithdrawalDestination `json:"dest,string"`
 	}
 	GetWithdrawalHistory struct {
