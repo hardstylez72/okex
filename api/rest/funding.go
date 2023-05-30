@@ -150,23 +150,24 @@ func (c *Funding) GetDepositHistory(req requests.GetDepositHistory) (response re
 // Withdrawal of tokens.
 //
 // https://www.okex.com/docs-v5/en/#rest-api-funding-withdrawal
-func (c *Funding) Withdrawal(ctx context.Context, req requests.Withdrawal) (response responses.Withdrawal, err error) {
+func (c *Funding) Withdrawal(ctx context.Context, req requests.Withdrawal) (*responses.Withdrawal, error) {
 	p := "/api/v5/asset/withdrawal"
 	m := okex.S2M(req)
 	res, err := c.client.DoCtx(ctx, http.MethodPost, p, true, m)
 	if err != nil {
-		return
+		return nil, err
 	}
 	defer res.Body.Close()
 
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
-		return
+		return nil, err
 	}
+	var response responses.Withdrawal
 	if err := json.Unmarshal(b, &response); err != nil {
-		return
+		return nil, err
 	}
-	return
+	return &response, nil
 }
 
 // GetWithdrawalHistory
