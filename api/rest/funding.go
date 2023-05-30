@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -26,10 +27,10 @@ func NewFunding(c *ClientRest) *Funding {
 // Retrieve a list of all currencies. Not all currencies can be traded. Currencies that have not been defined in ISO 4217 may use a custom symbol.
 //
 // https://www.okex.com/docs-v5/en/#rest-api-funding-get-currencies
-func (c *Funding) GetCurrencies() (response responses.GetCurrencies, err error) {
+func (c *Funding) GetCurrencies(ctx context.Context) (response responses.GetCurrencies, err error) {
 	p := "/api/v5/asset/currencies"
 
-	res, err := c.client.Do(http.MethodGet, p, true)
+	res, err := c.client.DoCtx(ctx, http.MethodGet, p, true)
 	if err != nil {
 		return
 	}
@@ -41,10 +42,10 @@ func (c *Funding) GetCurrencies() (response responses.GetCurrencies, err error) 
 	return
 }
 
-func (c *Funding) GetCurrency(ccy string) (response responses.GetCurrencies, err error) {
+func (c *Funding) GetCurrency(ctx context.Context, ccy string) (response responses.GetCurrencies, err error) {
 	p := "/api/v5/asset/currencies?ccy="
 
-	res, err := c.client.Do(http.MethodGet, p+ccy, true)
+	res, err := c.client.DoCtx(ctx, http.MethodGet, p+ccy, true)
 	if err != nil {
 		return
 	}
@@ -60,13 +61,13 @@ func (c *Funding) GetCurrency(ccy string) (response responses.GetCurrencies, err
 // Retrieve the balances of all the assets, and the amount that is available or on hold.
 //
 // https://www.okex.com/docs-v5/en/#rest-api-funding-get-balance
-func (c *Funding) GetBalance(req requests.GetBalance) (response responses.GetBalance, err error) {
+func (c *Funding) GetBalance(ctx context.Context, req requests.GetBalance) (response responses.GetBalance, err error) {
 	p := "/api/v5/asset/balances"
 	m := okex.S2M(req)
 	if len(req.Ccy) > 0 {
 		m["ccy"] = strings.Join(req.Ccy, ",")
 	}
-	res, err := c.client.Do(http.MethodGet, p, true, m)
+	res, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
 	if err != nil {
 		return
 	}
@@ -148,10 +149,10 @@ func (c *Funding) GetDepositHistory(req requests.GetDepositHistory) (response re
 // Withdrawal of tokens.
 //
 // https://www.okex.com/docs-v5/en/#rest-api-funding-withdrawal
-func (c *Funding) Withdrawal(req requests.Withdrawal) (response responses.Withdrawal, err error) {
+func (c *Funding) Withdrawal(ctx context.Context, req requests.Withdrawal) (response responses.Withdrawal, err error) {
 	p := "/api/v5/asset/withdrawal"
 	m := okex.S2M(req)
-	res, err := c.client.Do(http.MethodPost, p, true, m)
+	res, err := c.client.DoCtx(ctx, http.MethodPost, p, true, m)
 	if err != nil {
 		return
 	}
@@ -165,10 +166,10 @@ func (c *Funding) Withdrawal(req requests.Withdrawal) (response responses.Withdr
 // Retrieve the withdrawal records according to the currency, withdrawal status, and time range in reverse chronological order. The 100 most recent records are returned by default.
 //
 // https://www.okex.com/docs-v5/en/#rest-api-funding-get-withdrawal-history
-func (c *Funding) GetWithdrawalHistory(req requests.GetWithdrawalHistory) (response responses.GetWithdrawalHistory, err error) {
+func (c *Funding) GetWithdrawalHistory(ctx context.Context, req requests.GetWithdrawalHistory) (response responses.GetWithdrawalHistory, err error) {
 	p := "/api/v5/asset/withdrawal-history"
 	m := okex.S2M(req)
-	res, err := c.client.Do(http.MethodGet, p, true, m)
+	res, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
 	if err != nil {
 		return
 	}

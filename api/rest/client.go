@@ -2,6 +2,7 @@ package rest
 
 import (
 	"bytes"
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -51,6 +52,62 @@ func NewClient(apiKey, secretKey, passphrase string, baseURL okex.BaseURL, desti
 	c.PublicData = NewPublicData(c)
 	c.TradeData = NewTradeData(c)
 	return c
+}
+
+// Do the http request to the server
+func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private bool, params ...map[string]string) (*http.Response, error) {
+	u := fmt.Sprintf("%s%s", c.baseURL, path)
+	var (
+		r    *http.Request
+		err  error
+		j    []byte
+		body string
+	)
+	if method == http.MethodGet {
+		r, err = http.NewRequest(http.MethodGet, u, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(params) > 0 {
+			q := r.URL.Query()
+			for k, v := range params[0] {
+				q.Add(k, strings.ReplaceAll(v, "\"", ""))
+			}
+			r.URL.RawQuery = q.Encode()
+			if len(params[0]) > 0 {
+				path += "?" + r.URL.RawQuery
+			}
+		}
+	} else {
+		j, err = json.Marshal(params[0])
+		if err != nil {
+			return nil, err
+		}
+		body = string(j)
+		if body == "{}" {
+			body = ""
+		}
+		r, err = http.NewRequestWithContext(ctx, method, u, bytes.NewBuffer(j))
+		if err != nil {
+			return nil, err
+		}
+		r.Header.Add("Content-Type", "application/json")
+	}
+	if err != nil {
+		return nil, err
+	}
+	if private {
+		timestamp, sign := c.sign(method, path, body)
+		r.Header.Add("OK-ACCESS-KEY", c.apiKey)
+		r.Header.Add("OK-ACCESS-PASSPHRASE", c.passphrase)
+		r.Header.Add("OK-ACCESS-SIGN", sign)
+		r.Header.Add("OK-ACCESS-TIMESTAMP", timestamp)
+	}
+	if c.destination == okex.DemoServer {
+		r.Header.Add("x-simulated-trading", "1")
+	}
+	return c.client.Do(r)
 }
 
 // Do the http request to the server
