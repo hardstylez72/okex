@@ -16,6 +16,7 @@ import (
 
 	"github.com/hardstylez72/okex"
 	requests "github.com/hardstylez72/okex/requests/rest/public"
+	basic "github.com/hardstylez72/okex/responses"
 	responses "github.com/hardstylez72/okex/responses/public_data"
 )
 
@@ -116,6 +117,20 @@ func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private boo
 
 	if res.StatusCode != 200 {
 		b, _ := io.ReadAll(res.Body)
+		return nil, errors.New(string(b))
+	}
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response basic.Basic
+	if err := json.Unmarshal(b, &response); err != nil {
+		return nil, err
+	}
+
+	if response.Code != 0 {
 		return nil, errors.New(string(b))
 	}
 
