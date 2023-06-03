@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -118,16 +119,16 @@ func (c *SubAccount) DeleteAPIKey(req requests.DeleteAPIKey) (response responses
 // (applies to master accounts only)
 //
 // https://www.okex.com/docs-v5/en/#rest-api-subaccount-get-sub-account-balance
-func (c *SubAccount) GetBalance(req requests.GetBalance) (response responses.GetBalance, err error) {
+func (c *SubAccount) GetBalance(ctx context.Context, req requests.GetBalance) (response responses.GetBalance, err error) {
 	p := "/api/v5/account/subaccount/balances"
 	m := okex.S2M(req)
-	res, err := c.client.Do(http.MethodGet, p, true, m)
+	_, b, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+	if err := json.Unmarshal(b, &response); err != nil {
+		return responses.GetBalance{}, err
+	}
 	return
 }
 
