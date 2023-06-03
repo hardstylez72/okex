@@ -131,13 +131,23 @@ type (
 		TS        okex.JSONTime       `json:"ts"`
 	}
 	Config struct {
-		Level      string            `json:"level"`
-		LevelTmp   string            `json:"levelTmp"`
-		AcctLv     string            `json:"acctLv"`
-		AutoLoan   bool              `json:"autoLoan"`
-		UID        string            `json:"uid"`
-		GreeksType okex.GreekType    `json:"greeksType"`
-		PosMode    okex.PositionType `json:"posMode"`
+		AcctLv         string        `json:"acctLv"`
+		AutoLoan       bool          `json:"autoLoan"`
+		CtIsoMode      string        `json:"ctIsoMode"`
+		GreeksType     string        `json:"greeksType"`
+		Level          string        `json:"level"`
+		LevelTmp       string        `json:"levelTmp"`
+		MgnIsoMode     string        `json:"mgnIsoMode"`
+		PosMode        string        `json:"posMode"`
+		SpotOffsetType string        `json:"spotOffsetType"`
+		Uid            string        `json:"uid"`
+		Label          string        `json:"label"`
+		RoleType       string        `json:"roleType"`
+		TraderInsts    []interface{} `json:"traderInsts"`
+		OpAuth         string        `json:"opAuth"`
+		Ip             string        `json:"ip"`
+		Perm           string        `json:"perm"`
+		MainUid        string        `json:"mainUid"`
 	}
 	PositionMode struct {
 		PosMode okex.PositionType `json:"posMode"`

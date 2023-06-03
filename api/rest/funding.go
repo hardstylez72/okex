@@ -82,10 +82,10 @@ func (c *Funding) GetBalance(ctx context.Context, req requests.GetBalance) (resp
 // This endpoint supports the transfer of funds between your funding account and trading account, and from the master account to sub-accounts. Direct transfers between sub-accounts are not allowed.
 //
 // https://www.okex.com/docs-v5/en/#rest-api-funding-funds-transfer
-func (c *Funding) FundsTransfer(req requests.FundsTransfer) (response responses.FundsTransfer, err error) {
+func (c *Funding) FundsTransfer(ctx context.Context, req requests.FundsTransfer) (response responses.FundsTransfer, err error) {
 	p := "/api/v5/asset/transfer"
 	m := okex.S2M(req)
-	res, err := c.client.Do(http.MethodPost, p, true, m)
+	res, err := c.client.DoCtx(ctx, http.MethodPost, p, true, m)
 	if err != nil {
 		return
 	}
@@ -116,10 +116,10 @@ func (c *Funding) AssetBillsDetails(req requests.AssetBillsDetails) (response re
 // Retrieve the deposit addresses of currencies, including previously-used addresses.
 //
 // https://www.okex.com/docs-v5/en/#rest-api-funding-get-deposit-address
-func (c *Funding) GetDepositAddress(req requests.GetDepositAddress) (response responses.GetDepositAddress, err error) {
+func (c *Funding) GetDepositAddress(ctx context.Context, req requests.GetDepositAddress) (response responses.GetDepositAddress, err error) {
 	p := "/api/v5/asset/deposit-address"
 	m := okex.S2M(req)
-	res, err := c.client.Do(http.MethodGet, p, true, m)
+	res, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
 	if err != nil {
 		return
 	}
