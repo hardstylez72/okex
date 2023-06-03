@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -114,15 +115,15 @@ func (c *Account) GetBills(req requests.GetBills, arc bool) (response responses.
 // Retrieve current account configuration.
 //
 // https://www.okex.com/docs-v5/en/#rest-api-account-get-account-configuration
-func (c *Account) GetConfig() (response responses.GetConfig, err error) {
+func (c *Account) GetConfig(ctx context.Context) (response responses.GetConfig, err error) {
 	p := "/api/v5/account/config"
-	res, err := c.client.Do(http.MethodGet, p, true)
+	_, b, err := c.client.DoCtx(ctx, http.MethodGet, p, true)
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+	if err := json.Unmarshal(b, &response); err != nil {
+		return responses.GetConfig{}, err
+	}
 
 	return
 }

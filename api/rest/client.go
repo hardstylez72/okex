@@ -58,7 +58,7 @@ func NewClient(apiKey, secretKey, passphrase string, baseURL okex.BaseURL, desti
 }
 
 // Do the http request to the server
-func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private bool, params ...map[string]string) (*http.Response, error) {
+func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private bool, params ...map[string]string) (*http.Response, []byte, error) {
 	u := fmt.Sprintf("%s%s", c.baseURL, path)
 	var (
 		r    *http.Request
@@ -69,7 +69,7 @@ func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private boo
 	if method == http.MethodGet {
 		r, err = http.NewRequest(http.MethodGet, u, nil)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		if len(params) > 0 {
@@ -85,7 +85,7 @@ func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private boo
 	} else {
 		j, err = json.Marshal(params[0])
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		body = string(j)
 		if body == "{}" {
@@ -93,12 +93,12 @@ func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private boo
 		}
 		r, err = http.NewRequestWithContext(ctx, method, u, bytes.NewBuffer(j))
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		r.Header.Add("Content-Type", "application/json")
 	}
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if private {
 		timestamp, sign := c.sign(method, path, body)
@@ -112,29 +112,29 @@ func (c *ClientRest) DoCtx(ctx context.Context, method, path string, private boo
 	}
 	res, err := c.client.Do(r)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if res.StatusCode != 200 {
 		b, _ := io.ReadAll(res.Body)
-		return nil, errors.New(string(b))
+		return nil, nil, errors.New(string(b))
 	}
 
 	b, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var response basic.Basic
 	if err := json.Unmarshal(b, &response); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if response.Code != 0 {
-		return nil, errors.New(string(b))
+		return nil, nil, errors.New(string(b))
 	}
 
-	return res, nil
+	return res, b, nil
 }
 
 // Do the http request to the server

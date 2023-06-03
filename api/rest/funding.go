@@ -3,7 +3,6 @@ package rest
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"net/http"
 	"strings"
 
@@ -31,14 +30,14 @@ func NewFunding(c *ClientRest) *Funding {
 func (c *Funding) GetCurrencies(ctx context.Context) (response responses.GetCurrencies, err error) {
 	p := "/api/v5/asset/currencies"
 
-	res, err := c.client.DoCtx(ctx, http.MethodGet, p, true)
+	_, b, err := c.client.DoCtx(ctx, http.MethodGet, p, true)
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
 
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+	if err := json.Unmarshal(b, &response); err != nil {
+		return responses.GetCurrencies{}, err
+	}
 
 	return
 }
@@ -46,14 +45,14 @@ func (c *Funding) GetCurrencies(ctx context.Context) (response responses.GetCurr
 func (c *Funding) GetCurrency(ctx context.Context, ccy string) (response responses.GetCurrencies, err error) {
 	p := "/api/v5/asset/currencies?ccy="
 
-	res, err := c.client.DoCtx(ctx, http.MethodGet, p+ccy, true)
+	_, b, err := c.client.DoCtx(ctx, http.MethodGet, p+ccy, true)
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
 
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+	if err := json.Unmarshal(b, &response); err != nil {
+		return responses.GetCurrencies{}, err
+	}
 
 	return
 }
@@ -68,13 +67,13 @@ func (c *Funding) GetBalance(ctx context.Context, req requests.GetBalance) (resp
 	if len(req.Ccy) > 0 {
 		m["ccy"] = strings.Join(req.Ccy, ",")
 	}
-	res, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
+	_, b, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+	if err := json.Unmarshal(b, &response); err != nil {
+		return responses.GetBalance{}, err
+	}
 	return
 }
 
@@ -85,13 +84,14 @@ func (c *Funding) GetBalance(ctx context.Context, req requests.GetBalance) (resp
 func (c *Funding) FundsTransfer(ctx context.Context, req requests.FundsTransfer) (response responses.FundsTransfer, err error) {
 	p := "/api/v5/asset/transfer"
 	m := okex.S2M(req)
-	res, err := c.client.DoCtx(ctx, http.MethodPost, p, true, m)
+	_, b, err := c.client.DoCtx(ctx, http.MethodPost, p, true, m)
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+
+	if err := json.Unmarshal(b, &response); err != nil {
+		return responses.FundsTransfer{}, err
+	}
 	return
 }
 
@@ -119,13 +119,13 @@ func (c *Funding) AssetBillsDetails(req requests.AssetBillsDetails) (response re
 func (c *Funding) GetDepositAddress(ctx context.Context, req requests.GetDepositAddress) (response responses.GetDepositAddress, err error) {
 	p := "/api/v5/asset/deposit-address"
 	m := okex.S2M(req)
-	res, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
+	_, b, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+	if err := json.Unmarshal(b, &response); err != nil {
+		return responses.GetDepositAddress{}, err
+	}
 	return
 }
 
@@ -153,13 +153,7 @@ func (c *Funding) GetDepositHistory(req requests.GetDepositHistory) (response re
 func (c *Funding) Withdrawal(ctx context.Context, req requests.Withdrawal) (*responses.Withdrawal, error) {
 	p := "/api/v5/asset/withdrawal"
 	m := okex.S2M(req)
-	res, err := c.client.DoCtx(ctx, http.MethodPost, p, true, m)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	b, err := io.ReadAll(res.Body)
+	_, b, err := c.client.DoCtx(ctx, http.MethodPost, p, true, m)
 	if err != nil {
 		return nil, err
 	}
@@ -177,13 +171,13 @@ func (c *Funding) Withdrawal(ctx context.Context, req requests.Withdrawal) (*res
 func (c *Funding) GetWithdrawalHistory(ctx context.Context, req requests.GetWithdrawalHistory) (response responses.GetWithdrawalHistory, err error) {
 	p := "/api/v5/asset/withdrawal-history"
 	m := okex.S2M(req)
-	res, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
+	_, b, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&response)
+	if err := json.Unmarshal(b, &response); err != nil {
+		return responses.GetWithdrawalHistory{}, err
+	}
 	return
 }
 
