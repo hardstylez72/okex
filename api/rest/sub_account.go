@@ -120,7 +120,8 @@ func (c *SubAccount) DeleteAPIKey(req requests.DeleteAPIKey) (response responses
 //
 // https://www.okex.com/docs-v5/en/#rest-api-subaccount-get-sub-account-balance
 func (c *SubAccount) GetBalance(ctx context.Context, req requests.GetBalance) (response responses.GetBalance, err error) {
-	p := "/api/v5/account/subaccount/balances"
+	p := "/api/v5/asset/subaccount/balances"
+
 	m := okex.S2M(req)
 	_, b, err := c.client.DoCtx(ctx, http.MethodGet, p, true, m)
 	if err != nil {
